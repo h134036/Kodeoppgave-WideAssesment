@@ -19,7 +19,6 @@ class App extends React.Component<Iprops, Istate> {
     this.sortByTitle = this.sortByTitle.bind(this);
     this.sortByYear = this.sortByYear.bind(this);
     this.sortByMetascore = this.sortByMetascore.bind(this);
-    this.displayInfo = this.displayInfo.bind(this);
   }
 
   Url1 = "http://www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
@@ -131,10 +130,12 @@ class App extends React.Component<Iprops, Istate> {
     }
   }
 
+  /*
   displayInfo = (e: any) => {
     const song = e.detail.item.getAttribute("data-item");
     console.log("We need to get the details for ", song);
   };
+  */
 
   render() {
     return (
@@ -148,9 +149,9 @@ class App extends React.Component<Iprops, Istate> {
                 <th onClick={this.sortByYear}>Year</th>
                 <th onClick={this.sortByMetascore}>Rating</th>
               </tr>
-              {this.state.filmer.map((each, index) => {
+              {this.state.filmer.map(each => {
                 return (
-                  <tr data-item={each} onClick={this.displayInfo}>
+                  <tr>
                     <td key={each.Metascore + Math.random() * 1000}>
                       {each.Title}
                     </td>
