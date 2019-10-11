@@ -131,6 +131,7 @@ class App extends React.Component<Iprops, Istate> {
   }
 
   /*
+  test
   displayInfo = (e: any) => {
     const song = e.detail.item.getAttribute("data-item");
     console.log("We need to get the details for ", song);
