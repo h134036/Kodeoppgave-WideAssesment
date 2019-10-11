@@ -1,0 +1,22 @@
+div.greyModal {
+  background-color: pink;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  height: 50%;
+}
+
+div.modalContent {
+  opacity: 1;
+  position: fixed;
+  width: 100%;
+  left: 100%;
+  margin-left: -80%;
+  height: 100px;
+  background-color: white;
+  border: solid 4px black;
+  border-color: black;
+}
