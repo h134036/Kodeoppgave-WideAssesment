@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 import { array, object, number } from "prop-types";
-// import "./App.css";
+import "./App.css";
 import { css, jsx } from "@emotion/core";
 import Film from "./FIlm";
 import Modal from "./Modal";
@@ -12,12 +12,17 @@ interface Istate {
   isModalOpen: boolean;
   rekkefølge: number;
   search: string;
+  searchD: string;
   Action: boolean;
   Adventure: boolean;
   SciFi: boolean;
   title: boolean;
   year: boolean;
   metascoreAsc: boolean;
+  imdbRating: boolean;
+  runtime: boolean;
+  director: boolean;
+  boxOffice: boolean;
 }
 
 interface Iprops {}
@@ -30,19 +35,29 @@ class App extends React.Component<Iprops, Istate> {
       isModalOpen: false,
       rekkefølge: 1,
       search: "",
+      searchD: "",
       Action: false,
       Adventure: false,
       SciFi: false,
       title: true,
       year: true,
-      metascoreAsc: true
+      metascoreAsc: true,
+      imdbRating: true,
+      runtime: true,
+      director: true,
+      boxOffice: true
     };
 
     this.sortByTitle = this.sortByTitle.bind(this);
     this.sortByYear = this.sortByYear.bind(this);
     this.sortByMetascore = this.sortByMetascore.bind(this);
+    this.sortImdbRating = this.sortImdbRating.bind(this);
+    this.sortRuntime = this.sortRuntime.bind(this);
+    this.sortBoxOffice = this.sortBoxOffice.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeD = this.handleChangeD.bind(this);
     this.commitFilters = this.commitFilters.bind(this);
+    this.sortByDirector = this.sortByDirector.bind(this);
   }
 
   Url1 = "http://www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
@@ -88,51 +103,49 @@ class App extends React.Component<Iprops, Istate> {
     console.log(this.state.filmer[0].Title);
   }
 
-  // imdbRating, Runtime, Genre, Director, BoxOffice
-
   toggleModal = () => {
     this.setState({
       isModalOpen: !this.state.isModalOpen
     });
   };
 
-  //Kanskje den dummeste, mest knotete koden jeg har skrivet. Men den funker om titlene er like, men bare
-  //med hensyn til de 5 første characters-ene. Skal se på om jeg får tid :)
   sortByTitle() {
+    let tempFilmer = this.state.filmer;
+
     if (!this.state.title) {
-      this.setState(prevState => {
-        this.state.filmer.sort(
-          (a, b) =>
-            a.Title.charCodeAt(0) * 10000 +
-            a.Title.charCodeAt(1) * 1000 +
-            a.Title.charCodeAt(2) * 100 +
-            a.Title.charCodeAt(3) * 10 +
-            a.Title.charCodeAt(4) -
-            (b.Title.charCodeAt(0) * 10000 +
-              b.Title.charCodeAt(1) * 1000 +
-              b.Title.charCodeAt(2) * 100 +
-              b.Title.charCodeAt(3) * 10 +
-              b.Title.charCodeAt(4))
-        );
+      tempFilmer.sort(function(a, b) {
+        return a.Title > b.Title ? 1 : -1;
       });
-      this.setState({ title: true });
-    } else {
-      this.setState(prevState => {
-        this.state.filmer.sort(
-          (a, b) =>
-            b.Title.charCodeAt(0) * 10000 +
-            b.Title.charCodeAt(1) * 1000 +
-            b.Title.charCodeAt(2) * 100 +
-            b.Title.charCodeAt(3) * 10 +
-            b.Title.charCodeAt(4) -
-            (a.Title.charCodeAt(0) * 10000 +
-              a.Title.charCodeAt(1) * 1000 +
-              a.Title.charCodeAt(2) * 100 +
-              a.Title.charCodeAt(3) * 10 +
-              a.Title.charCodeAt(4))
-        );
+
+      this.setState({ filmer: tempFilmer, title: true });
+    }
+
+    if (this.state.title) {
+      tempFilmer.sort(function(a, b) {
+        return a.Title < b.Title ? 1 : -1;
       });
-      this.setState({ title: false });
+
+      this.setState({ filmer: tempFilmer, title: false });
+    }
+  }
+
+  sortByDirector() {
+    let tempFilmer = this.state.filmer;
+
+    if (!this.state.director) {
+      tempFilmer.sort(function(a, b) {
+        return a.Director > b.Director ? 1 : -1;
+      });
+
+      this.setState({ filmer: tempFilmer, director: true });
+    }
+
+    if (this.state.director) {
+      tempFilmer.sort(function(a, b) {
+        return a.Director < b.Director ? 1 : -1;
+      });
+
+      this.setState({ filmer: tempFilmer, director: false });
     }
   }
 
@@ -164,12 +177,74 @@ class App extends React.Component<Iprops, Istate> {
     }
   }
 
+  sortImdbRating() {
+    if (!this.state.imdbRating) {
+      this.setState(prevState => {
+        this.state.filmer.sort((a, b) => a.imdbRating - b.imdbRating);
+      });
+      this.setState({ metascoreAsc: true });
+    } else {
+      this.setState(prevState => {
+        this.state.filmer.sort((a, b) => b.imdbRating - a.imdbRating);
+      });
+      this.setState({ imdbRating: false });
+    }
+  }
+
+  sortRuntime() {
+    if (!this.state.runtime) {
+      this.setState(prevState => {
+        this.state.filmer.sort(
+          (a, b) =>
+            parseInt(a.Runtime.substring(0, 3)) -
+            parseInt(b.Runtime.substring(0, 3))
+        );
+      });
+      this.setState({ runtime: true });
+    } else {
+      this.setState(prevState => {
+        this.state.filmer.sort(
+          (a, b) =>
+            parseInt(b.Runtime.substring(0, 3)) -
+            parseInt(a.Runtime.substring(0, 3))
+        );
+      });
+      this.setState({ runtime: false });
+    }
+  }
+
+  sortBoxOffice() {
+    if (!this.state.boxOffice) {
+      this.setState(prevState => {
+        this.state.filmer.sort(
+          (a, b) =>
+            parseInt(a.BoxOffice.substring(1)) -
+            parseInt(b.BoxOffice.substring(1))
+        );
+      });
+      this.setState({ boxOffice: true });
+    } else {
+      this.setState(prevState => {
+        this.state.filmer.sort(
+          (a, b) =>
+            parseInt(b.BoxOffice.substring(1)) -
+            parseInt(a.BoxOffice.substring(1))
+        );
+      });
+      this.setState({ boxOffice: false });
+    }
+  }
+
   endreIndex(tall: number) {
     this.setState({ rekkefølge: tall });
   }
 
   handleChange = (teksten: string) => {
     this.setState({ search: teksten });
+  };
+
+  handleChangeD = (teksten: string) => {
+    this.setState({ searchD: teksten });
   };
 
   handleAction = () => {
@@ -196,32 +271,20 @@ class App extends React.Component<Iprops, Istate> {
   }
 
   render() {
-    const h1Style = css({
-      backgroundColor: "rgba(255, 255, 255, 0.85)",
-      position: "absolute",
-      right: 0,
-      bottom: "2rem",
-      padding: "0.5rem",
-      fontFamily: "sans-serif",
-      fontSize: "1.5rem",
-      boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)"
-    });
-
-    const titleStyle = css({
-      boxSizing: "border-box",
-      width: 300,
-      height: 200
-    });
-
-    // imdbRating, Runtime, Genre, Director, BoxOffice
-
-    let filteredMovies = this.state.filmer.filter(each => {
-      return each.Genre.indexOf(this.state.search) !== -1;
-    });
+    let filteredMovies =
+      this.state.search.length > 0
+        ? this.state.filmer.filter(each => {
+            return each.Title.indexOf(this.state.search) !== -1;
+          })
+        : this.state.filmer.filter(each => {
+            return each.Director.indexOf(this.state.searchD) !== -1;
+          });
 
     return (
       <div>
-        <h1 css={titleStyle}>Heloo</h1>
+        <div id="tittel">
+          <h1>Filmtabell</h1>
+        </div>
         <Modal
           show={this.state.isModalOpen}
           onClose={this.toggleModal}
@@ -254,20 +317,32 @@ class App extends React.Component<Iprops, Istate> {
           <input type="button" value="Submit" onClick={this.commitFilters} />
         </form>
 
-        <input
-          type="text"
-          value={this.state.search}
-          onChange={(e: any) => this.handleChange(e.target.value)}
-        />
-
+        <form>
+          Movie title search:
+          <input
+            type="text"
+            value={this.state.search}
+            onChange={(e: any) => this.handleChange(e.target.value)}
+          />
+          Director search:
+          <input
+            type="text"
+            value={this.state.searchD}
+            onChange={(e: any) => this.handleChangeD(e.target.value)}
+          />
+        </form>
         <div className="Filmer">
           <table id="myTable">
             <tbody>
               <tr>
                 <th onClick={this.sortByTitle}>Title</th>
                 <th onClick={this.sortByYear}>Year</th>
-                <th onClick={this.sortByMetascore}>Rating</th>
                 <th>Genre</th>
+                <th onClick={this.sortRuntime}>Runtime</th>
+                <th onClick={this.sortByDirector}>Director</th>
+                <th onClick={this.sortBoxOffice}>BoxOffice</th>
+                <th onClick={this.sortByMetascore}>MetaRating</th>
+                <th onClick={this.sortImdbRating}>ImdbRating</th>
               </tr>
               {filteredMovies.map((each, index) => {
                 return (
@@ -281,11 +356,24 @@ class App extends React.Component<Iprops, Istate> {
                     <td key={each.Metascore + Math.random() * 1000}>
                       {each.Year}
                     </td>
+
+                    <td key={each.Metascore + Math.random() * 1000}>
+                      {each.Genre}
+                    </td>
+                    <td key={each.Metascore + Math.random() * 1000}>
+                      {each.Runtime}
+                    </td>
+                    <td key={each.Metascore + Math.random() * 1000}>
+                      {each.Director}
+                    </td>
+                    <td key={each.Metascore + Math.random() * 1000}>
+                      {each.BoxOffice}
+                    </td>
                     <td key={each.Metascore + Math.random() * 1000}>
                       {each.Metascore}
                     </td>
-                    <td key={each.Metascore + Math.random() * 1000}>
-                      {each.Genre}
+                    <td key={each.imdbRating + Math.random() * 1000}>
+                      {each.imdbRating}
                     </td>
                   </tr>
                 );
@@ -293,7 +381,6 @@ class App extends React.Component<Iprops, Istate> {
             </tbody>
           </table>
         </div>
-        <Film />
       </div>
     );
   }
