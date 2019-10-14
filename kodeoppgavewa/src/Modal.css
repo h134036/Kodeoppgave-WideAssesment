@@ -13,7 +13,7 @@ div.greyModal {
 div.modalContent {
   opacity: 1;
   position: fixed;
-  width: 20%;
+  width: 40%;
   left: 100%;
   margin-left: -90%;
   height: fit-content;
@@ -24,7 +24,7 @@ div.modalContent {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-button {
+#denneKnapp {
   background-color: #4caf50; /* Green */
   border: none;
   color: white;

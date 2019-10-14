@@ -23,6 +23,7 @@ interface Istate {
   runtime: boolean;
   director: boolean;
   boxOffice: boolean;
+  sokFilm: string;
 }
 
 interface Iprops {}
@@ -45,7 +46,8 @@ class App extends React.Component<Iprops, Istate> {
       imdbRating: true,
       runtime: true,
       director: true,
-      boxOffice: true
+      boxOffice: true,
+      sokFilm: ""
     };
 
     this.sortByTitle = this.sortByTitle.bind(this);
@@ -58,6 +60,7 @@ class App extends React.Component<Iprops, Istate> {
     this.handleChangeD = this.handleChangeD.bind(this);
     this.commitFilters = this.commitFilters.bind(this);
     this.sortByDirector = this.sortByDirector.bind(this);
+    this.leggTilFilm = this.leggTilFilm.bind(this);
   }
 
   Url1 = "http://www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
@@ -71,6 +74,7 @@ class App extends React.Component<Iprops, Istate> {
     this.getDataAPI();
   }
 
+  //Henter noen filmer for å sette opp tabellen
   async getDataAPI() {
     let tempFilmer: any = [];
 
@@ -99,16 +103,16 @@ class App extends React.Component<Iprops, Istate> {
     tempFilmer.push(data);
 
     this.setState({ filmer: tempFilmer });
-
-    console.log(this.state.filmer[0].Title);
   }
 
+  //Gjør modal true eller false
   toggleModal = () => {
     this.setState({
       isModalOpen: !this.state.isModalOpen
     });
   };
 
+  //Sorteringsfunksjoner
   sortByTitle() {
     let tempFilmer = this.state.filmer;
 
@@ -235,10 +239,12 @@ class App extends React.Component<Iprops, Istate> {
     }
   }
 
+  //endrer index som skal sendes som prop i modalen, slik at han vet hvilken film han skal vise som modal
   endreIndex(tall: number) {
     this.setState({ rekkefølge: tall });
   }
 
+  //inputfelter
   handleChange = (teksten: string) => {
     this.setState({ search: teksten });
   };
@@ -247,6 +253,11 @@ class App extends React.Component<Iprops, Istate> {
     this.setState({ searchD: teksten });
   };
 
+  handleChangeFilm = (teksten: string) => {
+    this.setState({ sokFilm: teksten });
+  };
+
+  //filtermetoder som ikke er i bruk
   handleAction = () => {
     this.setState({ Action: !this.state.Action });
   };
@@ -270,7 +281,35 @@ class App extends React.Component<Iprops, Istate> {
     return tempFilmer;
   }
 
+  // gjør det mulig å søke etter filmen med API-et, og legger filmen til i listen av filmer. Det er ikke behandling av
+  // feilsøk. Det tas heller ikke hensyn til filmer med samme titel. Han tar den første han finner om det er flere med
+  // samme navn.
+  async leggTilFilm() {
+    let tempFilmer = this.state.filmer;
+
+    let UrlS = "http://www.omdbapi.com/?s=";
+    let Api = "&apikey=2175fa84";
+    let search = this.state.sokFilm;
+    let UrlI = "http://www.omdbapi.com/?i=";
+
+    let Url = UrlS + search + Api;
+
+    let response = await fetch(Url);
+    let data = await response.json();
+
+    let imdbKode = data.Search[0].imdbID;
+
+    let sisteUrl = UrlI + imdbKode + Api;
+
+    response = await fetch(sisteUrl);
+    data = await response.json();
+    tempFilmer.push(data);
+
+    this.setState({ filmer: tempFilmer });
+  }
+
   render() {
+    // Filtrerer filmlisten utifra om en søker på film-tittler eller directors, og returnerer en liste som rendres.
     let filteredMovies =
       this.state.search.length > 0
         ? this.state.filmer.filter(each => {
@@ -292,7 +331,9 @@ class App extends React.Component<Iprops, Istate> {
           filmer={this.state.filmer}
         />
 
-        {/* <form>
+        {/* 
+        Begynte å lage filter for sjangere, men fikk det ikke helt til
+        <form>
           Action
           <input
             type="checkbox"
@@ -318,13 +359,13 @@ class App extends React.Component<Iprops, Istate> {
         </form> */}
 
         <form>
-          Movie title search:
+          Search movies in table:
           <input
             type="text"
             value={this.state.search}
             onChange={(e: any) => this.handleChange(e.target.value)}
           />
-          Director search:
+          Search director in table:
           <input
             type="text"
             value={this.state.searchD}
@@ -380,6 +421,16 @@ class App extends React.Component<Iprops, Istate> {
               })}
             </tbody>
           </table>
+          <input
+            type="text"
+            value={this.state.sokFilm}
+            onChange={(e: any) => this.handleChangeFilm(e.target.value)}
+          />
+          <input
+            type="submit"
+            onClick={this.leggTilFilm}
+            value="Add movie to table"
+          />
         </div>
       </div>
     );

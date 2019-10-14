@@ -10,22 +10,13 @@ class Modal extends React.Component<{
   index: number;
   filmer: any;
 }> {
-  //bilder
-  Url1 = "http://img.www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
-  Url2 = "http://img.www.omdbapi.com/?i=tt1431045&apikey=2175fa84"; //Deadpool
-  Url3 = "http://img.www.omdbapi.com/?i=tt1201607&apikey=2175fa84"; //Harry Potter and the Deathly Hallows: Part 2
-  Url4 = "http://img.www.omdbapi.com/?i=tt0258463&apikey=2175fa84"; //The Bourne Identity
-  Url5 = "http://img.www.omdbapi.com/?i=tt1220719&apikey=2175fa84"; //Ip Man
-  Url6 = "http://img.www.omdbapi.com/?i=tt2294629&apikey=2175fa84"; //Frozen
-
   render() {
-    // Render nothing if the "show" prop is false
+    // Rendrer ikke noe om show = false. Returnerer bare null.
     if (!this.props.show) {
       return null;
     }
 
     return (
-      // <div className="greyModal">
       <div className="modalContent">
         <form>
           <h2>{this.props.filmer[this.props.index].Title}</h2>
@@ -48,10 +39,11 @@ class Modal extends React.Component<{
           {this.props.filmer[this.props.index].Plot}
         </form>
         <div className="footer">
-          <button onClick={this.props.onClose}>Close</button>
+          <button id="denneKnapp" onClick={this.props.onClose}>
+            Close
+          </button>
         </div>
       </div>
-      // </div>
     );
   }
 }
