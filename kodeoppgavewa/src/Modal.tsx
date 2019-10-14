@@ -44,6 +44,8 @@ class Modal extends React.Component<{
           <br />
           {this.props.filmer[this.props.index].imdbRating}
           <br />
+          <h3>Plot:</h3>
+          {this.props.filmer[this.props.index].Plot}
         </form>
         <div className="footer">
           <button onClick={this.props.onClose}>Close</button>

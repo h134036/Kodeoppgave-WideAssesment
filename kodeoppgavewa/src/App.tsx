@@ -292,7 +292,7 @@ class App extends React.Component<Iprops, Istate> {
           filmer={this.state.filmer}
         />
 
-        <form>
+        {/* <form>
           Action
           <input
             type="checkbox"
@@ -315,7 +315,7 @@ class App extends React.Component<Iprops, Istate> {
             onChange={this.handleSciFi}
           />
           <input type="button" value="Submit" onClick={this.commitFilters} />
-        </form>
+        </form> */}
 
         <form>
           Movie title search:
