@@ -9,6 +9,7 @@ class Modal extends React.Component<{
   onClose: any;
   index: number;
   filmer: any;
+  kode: string;
 }> {
   render() {
     // Rendrer ikke noe om show = false. Returnerer bare null.
@@ -16,24 +17,32 @@ class Modal extends React.Component<{
       return null;
     }
 
+    let startUrl = "http://img.omdbapi.com/?i=";
+    let sluttUrl = "&apikey=2175fa84";
+    let mellomUrl = this.props.kode;
+    let Url = startUrl + mellomUrl + sluttUrl;
+
+    console.log(Url);
+
     return (
       <div className="modalContent">
         <form>
           <h2>{this.props.filmer[this.props.index].Title}</h2>
+          <img width="125" height="200" src={Url}></img>
           <br />
-          {this.props.filmer[this.props.index].Year}
+          Year: {this.props.filmer[this.props.index].Year}
           <br />
-          {this.props.filmer[this.props.index].Genre}
+          Genre: {this.props.filmer[this.props.index].Genre}
           <br />
-          {this.props.filmer[this.props.index].Runtime}
+          Runtime: {this.props.filmer[this.props.index].Runtime}
           <br />
-          {this.props.filmer[this.props.index].Director}
+          Director: {this.props.filmer[this.props.index].Director}
           <br />
-          {this.props.filmer[this.props.index].BoxOffice}
+          BoxOffice: {this.props.filmer[this.props.index].BoxOffice}
           <br />
-          {this.props.filmer[this.props.index].Metascore}
+          Metascore: {this.props.filmer[this.props.index].Metascore}
           <br />
-          {this.props.filmer[this.props.index].imdbRating}
+          imdb-Rating: {this.props.filmer[this.props.index].imdbRating}
           <br />
           <h3>Plot:</h3>
           {this.props.filmer[this.props.index].Plot}

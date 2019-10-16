@@ -45,10 +45,14 @@ class SokFilm extends React.Component<{
             })}
           </tbody>
         </table>
-        <div className="footerSok">
-          <button id="denneKnappSok" onClick={this.props.onClose}>
-            Close
-          </button>
+        <div>
+          <input
+            type="submit"
+            key={Math.random() * 1000}
+            value="Close"
+            id="closeSok"
+            onClick={this.props.onClose}
+          />
         </div>
       </div>
     );

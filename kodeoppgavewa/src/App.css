@@ -27,7 +27,7 @@
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: #4caf50;
+  background-color: #679c69;
   color: white;
 }
 
@@ -53,9 +53,13 @@ input[type="text"] {
   cursor: pointer;
 }
 
+#searchMovieButton:hover {
+  background-color: #035a0f;
+}
+
 #deleteButton {
   width: 100%;
-  background-color: #4caf50;
+  background-color: #65b978;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -65,7 +69,7 @@ input[type="text"] {
 }
 
 #deleteButton:hover {
-  background-color: #45a049;
+  background-color: #717972;
 }
 
 input[type="submit"]:hover {

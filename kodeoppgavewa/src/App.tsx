@@ -70,6 +70,7 @@ class App extends React.Component<Iprops, Istate> {
     this.leggTilFilm = this.leggTilFilm.bind(this);
     this.deleteMovie = this.deleteMovie.bind(this);
     this.getData = this.getData.bind(this);
+    this.handleModal = this.handleModal.bind(this);
   }
 
   Url1 = "http://www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
@@ -84,8 +85,6 @@ class App extends React.Component<Iprops, Istate> {
   }
 
   getData = (data: string) => {
-    this.setState({ sokFilmerIndex: data });
-
     this.leggTilValgtFilm(data);
   };
 
@@ -270,9 +269,16 @@ class App extends React.Component<Iprops, Istate> {
     }
   }
 
-  //endrer index som skal sendes som prop i modalen, slik at han vet hvilken film han skal vise som modal
+  //endrer index og poster-kode som skal sendes som prop i modalen, slik at han vet hvilken film han skal vise som modal
   endreIndex(tall: number) {
-    this.setState({ rekkefølge: tall });
+    let kode = this.state.filmer[tall].imdbID;
+
+    this.setState({ rekkefølge: tall, sokFilmerIndex: kode });
+  }
+
+  handleModal(tall: number) {
+    this.endreIndex(tall);
+    this.toggleModal();
   }
 
   //inputfelter
@@ -324,8 +330,6 @@ class App extends React.Component<Iprops, Istate> {
 
     let Url = UrlI + search + Api;
 
-    console.log(Url);
-
     let response = await fetch(Url);
     let data = await response.json();
     tempFilmer.push(data);
@@ -370,7 +374,9 @@ class App extends React.Component<Iprops, Istate> {
   }
 
   deleteMovie(tall: number) {
-    let tempFilmer = this.state.filmer.splice(tall, 1);
+    this.state.filmer.splice(tall, 1);
+    let tempFilmer2 = this.state.filmer;
+    this.setState({ filmer: tempFilmer2 });
   }
 
   render() {
@@ -394,6 +400,7 @@ class App extends React.Component<Iprops, Istate> {
           onClose={this.toggleModal}
           index={this.state.rekkefølge}
           filmer={this.state.filmer}
+          kode={this.state.sokFilmerIndex}
         />
 
         {/* 
@@ -453,9 +460,9 @@ class App extends React.Component<Iprops, Istate> {
               </tr>
               {filteredMovies.map((each, index) => {
                 return (
-                  <tr onClick={() => this.endreIndex(index)}>
+                  <tr>
                     <td
-                      onClick={this.toggleModal}
+                      onClick={() => this.handleModal(index)}
                       key={each.Metascore + Math.random() * 1000}
                     >
                       {each.Title}
