@@ -6,10 +6,13 @@ import "./App.css";
 import { css, jsx } from "@emotion/core";
 import Film from "./FIlm";
 import Modal from "./Modal";
+import SokFilm from "./SokFilm";
 
 interface Istate {
   filmer: any[];
+  sokFilmer: any[];
   isModalOpen: boolean;
+  isSokOpen: boolean;
   rekkefølge: number;
   search: string;
   searchD: string;
@@ -24,6 +27,7 @@ interface Istate {
   director: boolean;
   boxOffice: boolean;
   sokFilm: string;
+  sokFilmerIndex: string;
 }
 
 interface Iprops {}
@@ -33,8 +37,11 @@ class App extends React.Component<Iprops, Istate> {
     super(props);
     this.state = {
       filmer: [],
+      sokFilmer: [],
       isModalOpen: false,
+      isSokOpen: false,
       rekkefølge: 1,
+      sokFilmerIndex: "",
       search: "",
       searchD: "",
       Action: false,
@@ -61,6 +68,8 @@ class App extends React.Component<Iprops, Istate> {
     this.commitFilters = this.commitFilters.bind(this);
     this.sortByDirector = this.sortByDirector.bind(this);
     this.leggTilFilm = this.leggTilFilm.bind(this);
+    this.deleteMovie = this.deleteMovie.bind(this);
+    this.getData = this.getData.bind(this);
   }
 
   Url1 = "http://www.omdbapi.com/?i=tt1285016&apikey=2175fa84"; //The Social Network
@@ -73,6 +82,12 @@ class App extends React.Component<Iprops, Istate> {
   componentDidMount() {
     this.getDataAPI();
   }
+
+  getData = (data: string) => {
+    this.setState({ sokFilmerIndex: data });
+
+    this.leggTilValgtFilm(data);
+  };
 
   //Henter noen filmer for å sette opp tabellen
   async getDataAPI() {
@@ -110,6 +125,22 @@ class App extends React.Component<Iprops, Istate> {
     this.setState({
       isModalOpen: !this.state.isModalOpen
     });
+  };
+
+  //Gjør sok true eller false
+  toggleSok = () => {
+    this.setState({
+      isSokOpen: !this.state.isSokOpen
+    });
+  };
+
+  //Opner søkefelt
+  trueSok = () => {
+    if (!this.state.isSokOpen) {
+      this.setState({
+        isSokOpen: true
+      });
+    }
   };
 
   //Sorteringsfunksjoner
@@ -284,8 +315,26 @@ class App extends React.Component<Iprops, Istate> {
   // gjør det mulig å søke etter filmen med API-et, og legger filmen til i listen av filmer. Det er ikke behandling av
   // feilsøk. Det tas heller ikke hensyn til filmer med samme titel. Han tar den første han finner om det er flere med
   // samme navn.
-  async leggTilFilm() {
+
+  async leggTilValgtFilm(search: string) {
     let tempFilmer = this.state.filmer;
+
+    let Api = "&apikey=2175fa84";
+    let UrlI = "http://www.omdbapi.com/?i=";
+
+    let Url = UrlI + search + Api;
+
+    console.log(Url);
+
+    let response = await fetch(Url);
+    let data = await response.json();
+    tempFilmer.push(data);
+
+    this.setState({ filmer: tempFilmer });
+  }
+
+  async leggTilFilm() {
+    let tempFilmer: any = [];
 
     let UrlS = "http://www.omdbapi.com/?s=";
     let Api = "&apikey=2175fa84";
@@ -297,6 +346,17 @@ class App extends React.Component<Iprops, Istate> {
     let response = await fetch(Url);
     let data = await response.json();
 
+    let antallFilmer = data.Search.length;
+
+    for (let i = 0; i < antallFilmer; i++) {
+      tempFilmer.push(data.Search[i]);
+    }
+
+    this.trueSok();
+
+    this.setState({ sokFilmer: tempFilmer });
+
+    /*
     let imdbKode = data.Search[0].imdbID;
 
     let sisteUrl = UrlI + imdbKode + Api;
@@ -306,6 +366,11 @@ class App extends React.Component<Iprops, Istate> {
     tempFilmer.push(data);
 
     this.setState({ filmer: tempFilmer });
+  */
+  }
+
+  deleteMovie(tall: number) {
+    let tempFilmer = this.state.filmer.splice(tall, 1);
   }
 
   render() {
@@ -322,7 +387,7 @@ class App extends React.Component<Iprops, Istate> {
     return (
       <div>
         <div id="tittel">
-          <h1>Filmtabell</h1>
+          <h1>My movie table</h1>
         </div>
         <Modal
           show={this.state.isModalOpen}
@@ -358,7 +423,7 @@ class App extends React.Component<Iprops, Istate> {
           <input type="button" value="Submit" onClick={this.commitFilters} />
         </form> */}
 
-        <form>
+        <form id="myForm">
           Search movies in table:
           <input
             type="text"
@@ -384,6 +449,7 @@ class App extends React.Component<Iprops, Istate> {
                 <th onClick={this.sortBoxOffice}>BoxOffice</th>
                 <th onClick={this.sortByMetascore}>MetaRating</th>
                 <th onClick={this.sortImdbRating}>ImdbRating</th>
+                <th></th>
               </tr>
               {filteredMovies.map((each, index) => {
                 return (
@@ -397,7 +463,6 @@ class App extends React.Component<Iprops, Istate> {
                     <td key={each.Metascore + Math.random() * 1000}>
                       {each.Year}
                     </td>
-
                     <td key={each.Metascore + Math.random() * 1000}>
                       {each.Genre}
                     </td>
@@ -416,6 +481,14 @@ class App extends React.Component<Iprops, Istate> {
                     <td key={each.imdbRating + Math.random() * 1000}>
                       {each.imdbRating}
                     </td>
+                    <td key={each.imdbRating + Math.random() * 1000}>
+                      <button
+                        id="deleteButton"
+                        onClick={() => this.deleteMovie(index)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -427,9 +500,16 @@ class App extends React.Component<Iprops, Istate> {
             onChange={(e: any) => this.handleChangeFilm(e.target.value)}
           />
           <input
+            id="searchMovieButton"
             type="submit"
             onClick={this.leggTilFilm}
-            value="Add movie to table"
+            value="Search new movies"
+          />
+          <SokFilm
+            show={this.state.isSokOpen}
+            filmer={this.state.sokFilmer}
+            onClose={this.toggleSok}
+            sendData={this.getData}
           />
         </div>
       </div>
